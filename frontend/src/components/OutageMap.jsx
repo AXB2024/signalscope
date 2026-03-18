@@ -24,7 +24,7 @@ function OutageMap({refresh}) {
   const [reports, setReports] = useState([]);
 
   const fetchReports = () => {
-    fetch("http://127.0.0.1:8000/reports")
+    fetch(`${import.meta.env.VITE_API_URL}/reports`)
       .then((res) => res.json())
       .then((data) => setReports(data));
   };
