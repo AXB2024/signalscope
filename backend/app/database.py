@@ -1,6 +1,7 @@
 from pymongo import MongoClient
+import os
 
-MONGO_URI = "mongodb+srv://signal_scope:Pointbreak*123#@cluster2.vynoqlu.mongodb.net/?appName=Cluster2"
+MONGO_URI = os.getenv("MONGO_URI")
 
 client = MongoClient(MONGO_URI)
 
