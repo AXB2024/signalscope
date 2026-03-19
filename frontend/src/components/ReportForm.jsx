@@ -18,7 +18,7 @@ function ReportForm({ onReportSubmitted }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch(`${import.meta.env.VITE_API_URL}/reports`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/report`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
