@@ -1,48 +1,68 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../config";
 
 function ReportForm({ onReportSubmitted }) {
   const [formData, setFormData] = useState({
     location: "",
     issue_type: "",
     severity: "",
-    description: ""
+    description: "",
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    setError("");
 
-    await fetch(`${import.meta.env.VITE_API_URL}/report`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+    try {
+      const payload = {
         location: formData.location,
         issue_type: formData.issue_type,
         severity: Number(formData.severity),
-        description: formData.description
-      })
-    });
+        description: formData.description,
+      };
+      console.log("Submitting report payload:", payload);
 
-    setFormData({
-      location: "",
-      issue_type: "",
-      severity: "",
-      description: ""
-    });
+      const response = await fetch(`${API_BASE_URL}/report`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    onReportSubmitted();
+      if (!response.ok) {
+        throw new Error(`Failed to submit report: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Report API response:", responseData);
+
+      setFormData({
+        location: "",
+        issue_type: "",
+        severity: "",
+        description: "",
+      });
+      onReportSubmitted();
+    } catch (submitError) {
+      setError(submitError.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+    <form onSubmit={handleSubmit} className="report-form">
       <h2>Report Network Issue</h2>
 
       <input
@@ -67,6 +87,8 @@ function ReportForm({ onReportSubmitted }) {
         placeholder="Severity (1-5)"
         value={formData.severity}
         onChange={handleChange}
+        min={1}
+        max={5}
         required
       />
 
@@ -77,7 +99,12 @@ function ReportForm({ onReportSubmitted }) {
         onChange={handleChange}
       />
 
-      <button type="submit">Submit Report</button>
+      <button type="submit" disabled={submitting}>
+        {submitting ? "Submitting..." : "Submit Report"}
+      </button>
+
+      {submitting && <p className="status-message">Submitting report...</p>}
+      {error && <p className="status-message error">{error}</p>}
     </form>
   );
 }
