@@ -16,7 +16,7 @@ function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <h1>signalScope Telecom Outage Monitor</h1>
+        <h1>Signal Scope Telecom Outage Monitor</h1>
         <p>
           Track outage hotspots, severity patterns, and location intelligence
           in near real-time.
